@@ -1,0 +1,3 @@
+[submodule "update-pamac"]
+	path = update-pamac
+	url = https://github.com/YourBoyRory/update-pamac.git

@@ -1,0 +1,11 @@
+[Unit]
+Description=Update check
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/update-check
+
+[Install]
+WantedBy=graphical-session.target

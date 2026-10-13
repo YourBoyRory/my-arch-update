@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for updates daily at 11 AM
+
+[Timer]
+OnCalendar=*-*-* 11:00:00
+Persistent=true
+Unit=update-checker.service
+
+[Install]
+WantedBy=timers.target
+

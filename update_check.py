@@ -17,10 +17,10 @@ def notify(notification_config = {}):
 def check_updates():
     try:
         temp_file = Path.home() / ".cache" / "update_check_notification_id"
-
+        notification_id = "0"
         if temp_file.exists():
             notification_id = temp_file.read_text()
-        if not notification_id or not notification_id.isdigit():
+        if not notification_id.isdigit():
             notification_id = "0"
 
         now = datetime.now().strftime("%I:%M %p")

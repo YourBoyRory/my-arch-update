@@ -1,8 +1,8 @@
 [Unit]
-Description=Check for updates daily at 11 AM
+Description=Auto check for updates
 
 [Timer]
-OnCalendar=*-*-* 11:00:00
+OnUnitActiveSec=3h
 Persistent=true
 Unit=update-checker.service
 

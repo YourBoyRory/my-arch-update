@@ -11,6 +11,7 @@ cp ./update-checker.timer ~/.config/systemd/user/update-checker.timer
 systemctl --user daemon-reload
 systemctl --user enable --now update-checker.service
 systemctl --user enable --now update-checker.timer
+systemctl --user list-timers update-checker.timer --no-pager
 
 git submodule update --init
 cd update-pamac

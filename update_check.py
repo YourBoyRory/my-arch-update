@@ -25,7 +25,7 @@ def check_updates():
 
         now = datetime.now().strftime("%I:%M %p")
         result = subprocess.run(
-            ["/usr/bin/pacman", "-Qu"],
+            ["/usr/bin/checkupdates"],
             capture_output=True,
             text=True,
             check=False,

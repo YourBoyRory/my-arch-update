@@ -14,14 +14,17 @@ def notify(notification_config = {}):
 
     return subprocess.run(['/usr/bin/notify-send'] + switches + ['-r', notification_id, '--print-id',  '--app-icon=package', '-a', 'Vertex Update', f"{title}", f"{message}"], capture_output=True)
 
-def check_updates():
+def check_updates(show_all = False):
     try:
-        temp_file = Path.home() / ".cache" / "update_check_notification_id"
         notification_id = "0"
-        if temp_file.exists():
-            notification_id = temp_file.read_text()
-        if not notification_id.isdigit():
-            notification_id = "0"
+        if show_all:
+            temp_file = "/dev/null"
+        else:
+            temp_file = Path.home() / ".cache" / "update_check_notification_id"
+            if temp_file.exists():
+                notification_id = temp_file.read_text()
+            if not notification_id.isdigit():
+                notification_id = "0"
 
         now = datetime.now().strftime("%I:%M %p")
         result = subprocess.run(
@@ -41,22 +44,38 @@ def check_updates():
             })
             if out.stdout.splitlines()[-1] == b'0':
                 subprocess.run(["xdg-terminal-exec", "vertex-update"])
-        elif result.returncode in [0,1] and not error:
+        elif result.returncode == 2 and not error:
             print("\nSystem is up to date!\n")
+            if show_all:
+                urgency = "normal"
+            else:
+                urgency = "low"
             out = notify({
                 "notification_id": notification_id,
                 "notification_title": "System is Up to Date.",
                 "notification_message": f"No updates where avalible at {now}.",
-                "notification_switches": ['--urgency=low']
+                "notification_switches": [f'--urgency={urgency}']
             })
             notification_id = out.stdout.splitlines()[0].decode("utf-8")
         else:
-            print(f"\nFailed to check for updates.\n{error}\n")
-            sys.exit(result.returncode)
+            print(f"\n{error}\n\n")
+            if show_all:
+                urgency = "normal"
+            else:
+                urgency = "low"
+            out = notify({
+                "notification_id": notification_id,
+                "notification_title": f"Failed to check for updates at {now}.",
+                "notification_message": f"{error}",
+                "notification_switches": ['--icon=security-medium', f'--urgency={urgency}']
+            })
+            notification_id = out.stdout.splitlines()[0].decode("utf-8")
 
         if notification_id.isdigit():
             with open(temp_file, "w") as f:
                 f.write(notification_id)
+        if result.returncode not in [0,2]:
+            sys.exit(result.returncode)
 
     except subprocess.CalledProcessError as e:
         print(f"\nError checking updates: {e}\n")
@@ -67,4 +86,7 @@ def check_updates():
 
 
 if __name__ == "__main__":
-    check_updates()
+    if "--show-all" in sys.argv:
+        check_updates(True)
+    else:
+        check_updates(False)

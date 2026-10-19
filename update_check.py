@@ -42,32 +42,33 @@ def check_updates(show_all = False):
                 "notification_message": f"There are updates to install. Install them now?",
                 "notification_switches": ['--icon=security-high', '--urgency=critical', '-A', 'Install Updates']
             })
-            if out.stdout.splitlines()[-1] == b'0':
+            print(len(out.stdout.splitlines()))
+            if len(out.stdout.splitlines()) > 1:
                 subprocess.run(["xdg-terminal-exec", "vertex-update"])
         elif result.returncode == 2 and not error:
             print("\nSystem is up to date!\n")
             if show_all:
-                urgency = "normal"
+                notification_policy = ['--transient', '--urgency=normal']
             else:
-                urgency = "low"
+                notification_policy = ['--urgency=low']
             out = notify({
                 "notification_id": notification_id,
                 "notification_title": "System is Up to Date.",
                 "notification_message": f"No updates where avalible at {now}.",
-                "notification_switches": [f'--urgency={urgency}']
+                "notification_switches": notification_policy
             })
             notification_id = out.stdout.splitlines()[0].decode("utf-8")
         else:
             print(f"\n{error}\n\n")
             if show_all:
-                urgency = "normal"
+                notification_policy = ['--transient', '--urgency=normal']
             else:
-                urgency = "low"
+                notification_policy = ['--urgency=low']
             out = notify({
                 "notification_id": notification_id,
                 "notification_title": f"Failed to check for updates at {now}.",
                 "notification_message": f"{error}",
-                "notification_switches": ['--icon=security-medium', f'--urgency={urgency}']
+                "notification_switches": notification_policy + ['--icon=security-medium']
             })
             notification_id = out.stdout.splitlines()[0].decode("utf-8")
 

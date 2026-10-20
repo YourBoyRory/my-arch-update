@@ -1,5 +1,5 @@
 #!/bin/bash
 
-eos-update
+eos-update --helper=yay
 update-pamac
 flatpak update
